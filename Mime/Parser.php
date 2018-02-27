@@ -98,6 +98,7 @@ class Parser
                         $hitFirstBoundary = true;
                         $inHeader = true;
                         $content = '';
+			continue;
                     } elseif (strcmp(trim($line), '--' . $boundary . '--') === 0) {
                         $content = substr($content, 0, -2);
                         self::decodeContent($currentPart, $content);
@@ -108,17 +109,17 @@ class Parser
                         }
                         $multipart->addPart($currentPart, $isMain);
                         $content = '';
+			continue;
                     }
-                } else {
-                    if ($hitFirstBoundary === false) {
-                        if (trim($line) != '') {
-                            $inHeader = true;
-                            $currentHeader = $line;
-                            continue;
-                        }
-                    }
-                    $content .= $line . "\r\n";
                 }
+		if ($hitFirstBoundary === false) {
+		  if (trim($line) != '') {
+		    $inHeader = true;
+		    $currentHeader = $line;
+		    continue;
+		  }
+		}
+		$content .= $line . "\r\n";
             }
         }
         return $multipart;
